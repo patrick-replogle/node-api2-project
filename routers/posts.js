@@ -1,7 +1,10 @@
 const express = require("express");
+const commentsRouter = require("./comments.js");
 const db = require("../data/db.js");
 
 const router = express.Router();
+
+router.use("/:id/comments", commentsRouter);
 
 //get all posts
 router.get("/", (req, res) => {
