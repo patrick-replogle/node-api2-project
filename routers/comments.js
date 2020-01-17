@@ -60,4 +60,24 @@ router.post("/", (req, res) => {
     });
 });
 
+//async await version of posting comment
+// router.post("/", async (req, res) => {
+//   const comment = {
+//     text: req.body.text,
+//     post_id: req.params.id
+//   };
+
+//   if (!req.body.text) {
+//     return res
+//       .status(400)
+//       .json({ errorMessage: "Please provide text for the comment." });
+//   }
+//   try {
+//     const newComment = await db.insertComment(comment);
+//     res.status(201).json(comment);
+//   } catch (err) {
+//     res.status(500).json(err);
+//   }
+// });
+
 module.exports = router;
