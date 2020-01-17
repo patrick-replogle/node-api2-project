@@ -29,61 +29,35 @@ router.get("/", (req, res) => {
 
 //post a new comment
 router.post("/", (req, res) => {
-  const body = req.body;
-  const { id } = req.params;
+  const comment = {
+    text: req.body.text,
+    post_id: req.params.id
+  };
 
-  if (!body.text) {
+  if (!req.body.text) {
     return res
       .status(400)
       .json({ errorMessage: "Please provide text for the comment." });
-  } else {
-    db.findCommentById(id)
-      .then(data => {
-        if (data.length > 0) {
-          db.insertComment(body);
-        } else {
-          res.status(404).json({
-            message: "The post with the specified ID does not exist."
-          });
-        }
-      })
-      .then(() => db.findCommentById(id))
-      .then(data => res.status(201).json(data))
-      .catch(err => {
-        res.status(500).json({
-          success: false,
-          message: "Could not create hub messages"
-        });
-      });
   }
-});
 
-// router.post("/", (req, res) => {
-//   // const id = req.params.id;
-//   const data = req.body;
-//   if (!data.text) {
-//     res
-//       .status(400)
-//       .json({ errorMessage: "Please provide text for the comment." });
-//   } else {
-//     db.insertComment(data)
-//       .then(comment => {
-//         if (comment) {
-//           res.status(201).json(comment);
-//         } else {
-//           res.status(404).json({
-//             errorMessage: "The post with the specified ID does not exist."
-//           });
-//         }
-//       })
-//       .catch(error => {
-//         console.timeLog("error on POST /api/posts/:id/comments", error);
-//         res.status(500).json({
-//           errorMessage:
-//             "There was an error while saving the comment to the database"
-//         });
-//       });
-//   }
-// });
+  db.insertComment(comment)
+    .then(obj => {
+      db.findCommentById(obj.id)
+        .then(newCom => {
+          res.status(200).json(newCom);
+        })
+        .catch(err => {
+          res.status(500).json({
+            success: false,
+            error: "There was an error while saving the comment to the database"
+          });
+        });
+    })
+    .catch(err => {
+      res.status(404).json({
+        message: "The post with the specified ID does not exist."
+      });
+    });
+});
 
 module.exports = router;
