@@ -39,25 +39,23 @@ router.post("/", (req, res) => {
       .status(400)
       .json({ errorMessage: "Please provide text for the comment." });
   }
-
-  db.insertComment(comment)
-    .then(obj => {
-      db.findCommentById(obj.id)
-        .then(newCom => {
-          res.status(200).json(newCom);
+  db.findById(req.params.id).then(post => {
+    if (post) {
+      db.insertComment(comment)
+        .then(obj => {
+          db.findCommentById(obj.id).then(com => res.status(201).json(com));
         })
         .catch(err => {
           res.status(500).json({
-            success: false,
             error: "There was an error while saving the comment to the database"
           });
         });
-    })
-    .catch(err => {
+    } else {
       res.status(404).json({
         message: "The post with the specified ID does not exist."
       });
-    });
+    }
+  });
 });
 
 //async await version of posting comment
