@@ -1,40 +1,19 @@
 import React from "react";
-import axios from "axios";
 
 class Form extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       title: "",
-      contents: "",
-      itemToEdit: this.props.itemToEdit,
-      isEditing: this.props.isEditing
+      contents: ""
     };
   }
 
-  fetchData = () => {
-    axios
-      .get("http://localhost:4000/api/posts")
-      .then(res => {
-        console.log(res.data);
-        this.setState({
-          posts: res.data
-        });
-      })
-      .catch(err => {
-        console.log("Error fetching : ", err);
-      });
-  };
-
   componentDidUpdate(prevProps, prevState) {
-    if (
-      prevState.itemToEdit !== this.state.itemToEdit &&
-      prevState.isEditing !== this.state.isEditing
-    ) {
+    if (prevProps.itemToEdit !== this.props.itemToEdit) {
       this.setState({
-        title: this.state.itemToEdit.title,
-        contents: this.state.itemToEdit.contents,
-        isEditing: this.state.isEditing
+        title: this.props.itemToEdit.title,
+        contents: this.props.itemToEdit.contents
       });
     }
   }
@@ -47,65 +26,46 @@ class Form extends React.Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    //create a new object with only the state needed for the axios request
-    const newPost = {
-      title: this.state.title,
-      contents: this.state.contents
-    };
-
     if (this.state.title !== "" && this.state.contents !== "") {
-      if (this.state.isEditing) {
-        axios
-          .put(
-            `http://localhost:4000/api/posts/${this.state.itemToEdit.id}`,
-            newPost
-          )
-          .then(() => {
-            this.fetchData();
-            this.setState({
-              isEditing: false,
-              itemToEdit: {}
-            });
-          })
-          .catch(err => {
-            console.log("Error with put request: ", err);
-          });
+      if (this.props.isEditing) {
+        this.props.putPost(this.props.itemToEdit.id, this.state);
+        this.setState({
+          title: "",
+          contents: ""
+        });
+        this.props.cancelEdit();
       } else {
-        axios
-          .post("http://localhost:4000/api/posts", newPost)
-          .then(() => {
-            this.fetchData();
-            this.setState({
-              title: "",
-              contents: ""
-            });
-          })
-          .catch(err => {
-            console.log("Error posting: ", err);
-          });
+        this.props.postPost(this.state);
+        this.setState({
+          title: "",
+          contents: ""
+        });
       }
     }
   };
 
   render() {
     return (
-      <form onSubmit={this.handleSubmit}>
-        <input
-          value={this.state.title}
-          name="title"
-          type="text"
-          placeholder="title"
-          onChange={this.handleChange}
-        />
-        <input
-          value={this.state.contents}
-          name="contents"
-          type="text"
-          placeholder="contents"
-          onChange={this.handleChange}
-        />
-        <button>submit</button>
-      </form>
+      <>
+        {this.props.isEditing ? <h2>Edit a Post</h2> : <h2>Add a Post</h2>}
+        <form onSubmit={this.handleSubmit}>
+          <input
+            value={this.state.title}
+            name="title"
+            type="text"
+            placeholder="title"
+            onChange={this.handleChange}
+          />
+          <input
+            value={this.state.contents}
+            name="contents"
+            type="text"
+            placeholder="contents"
+            onChange={this.handleChange}
+          />
+          <button>submit</button>
+        </form>
+      </>
     );
   }
 }
