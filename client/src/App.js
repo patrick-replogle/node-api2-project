@@ -18,7 +18,6 @@ class App extends React.Component {
     axios
       .get("http://localhost:4000/api/posts")
       .then(res => {
-        console.log(res.data);
         this.setState({
           posts: res.data.reverse()
         });
@@ -54,13 +53,6 @@ class App extends React.Component {
     this.setState({
       isEditing: true,
       itemToEdit: post
-    });
-  };
-
-  cancelEdit = () => {
-    this.setState({
-      isEditing: false,
-      itemToEdit: {}
     });
   };
 

@@ -10,7 +10,10 @@ class Form extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevProps.itemToEdit !== this.props.itemToEdit) {
+    if (
+      prevProps.itemToEdit !== this.props.itemToEdit &&
+      this.props.isEditing === true
+    ) {
       this.setState({
         title: this.props.itemToEdit.title,
         contents: this.props.itemToEdit.contents
@@ -33,7 +36,6 @@ class Form extends React.Component {
           title: "",
           contents: ""
         });
-        this.props.cancelEdit();
       } else {
         this.props.postPost(this.state);
         this.setState({
