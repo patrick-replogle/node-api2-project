@@ -40,7 +40,7 @@ router.post("/", (req, res) => {
       .json({ errorMessage: "Please provide text for the comment." });
   }
   db.findById(req.params.id).then(post => {
-    if (post) {
+    if (post.length > 0) {
       db.insertComment(comment)
         .then(obj => {
           db.findCommentById(obj.id).then(com => res.status(201).json(com));

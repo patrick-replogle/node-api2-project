@@ -26,7 +26,7 @@ router.get("/:id", (req, res) => {
 
   db.findById(id)
     .then(post => {
-      if (post) {
+      if (post.length > 0) {
         res.status(200).json(post);
       } else {
         res
@@ -76,7 +76,7 @@ router.put("/:id", (req, res) => {
   } else {
     db.findById(id)
       .then(post => {
-        if (post) {
+        if (post.length > 0) {
           return db.update(id, updated);
         } else {
           res.status(404).json({
@@ -102,7 +102,7 @@ router.delete("/:id", (req, res) => {
 
   db.findById(id)
     .then(post => {
-      if (post) {
+      if (post.length > 0) {
         return db.remove(id).then(() => res.json(post));
       } else {
         res.status(404).json({
